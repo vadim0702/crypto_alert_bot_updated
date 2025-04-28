@@ -1,10 +1,15 @@
 import asyncio
 import sqlite3
+import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from config import TELEGRAM_TOKEN
 from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
 from database import init_db, save_settings, get_settings
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
 dp = Dispatcher()
@@ -51,7 +56,7 @@ async def send_crypto_alert(chat_id, symbol, price, volume_change, oi_change):
     try:
         await bot.send_message(chat_id, text=text, reply_markup=keyboard)
     except Exception as e:
-        print(f"Ошибка при отправке сообщения в чат {chat_id}: {e}")
+        logger.error(f"Ошибка при отправке сообщения в чат {chat_id}: {e}")
 
 async def main_loop():
     init_db()
@@ -60,7 +65,7 @@ async def main_loop():
             # Получаем данные с Binance
             binance_data = await get_binance_futures()
             if not binance_data:
-                print("Не удалось получить данные с Binance")
+                logger.warning("Не удалось получить данные с Binance")
                 await asyncio.sleep(300)
                 continue
 
@@ -90,7 +95,7 @@ async def main_loop():
 
             await asyncio.sleep(300)  # Пауза 5 минут
         except Exception as e:
-            print(f"Ошибка в main_loop: {e}")
+            logger.error(f"Ошибка в main_loop: {e}")
             await asyncio.sleep(60)  # Пауза 1 минута при ошибке
 
 async def main():
@@ -100,7 +105,7 @@ async def main():
         # Запускаем polling
         await dp.start_polling(bot)
     except Exception as e:
-        print(f"Ошибка в главном цикле бота: {e}")
+        logger.error(f"Ошибка в главном цикле бота: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
