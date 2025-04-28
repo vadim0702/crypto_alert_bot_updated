@@ -1,3 +1,4 @@
 from decouple import config
 
-TELEGRAM_TOKEN = config('TELEGRAM_TOKEN')
+# Load the token from the environment variables
+TELEGRAM_TOKEN = config("TELEGRAM_TOKEN")
