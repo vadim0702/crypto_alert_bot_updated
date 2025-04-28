@@ -1,9 +1,8 @@
 import asyncio
 import sqlite3
 import logging
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, DefaultBotProperties
 from aiogram.filters import Command
-from aiogram.types import DefaultBotProperties
 from config import TELEGRAM_TOKEN
 from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
 from database import init_db, save_settings, get_settings
