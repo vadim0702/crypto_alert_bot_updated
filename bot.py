@@ -44,10 +44,17 @@ async def main_loop():
         binance_data = await get_binance_futures()
         # Тут пример обработки монет и вызова send_crypto_alert
         # await send_crypto_alert(chat_id, symbol, price, volume_change, oi_change)
-        await asyncio.sleep(300)  # Проверять каждые 5 минут
+      from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+scheduler = AsyncIOScheduler()
+
+def schedule_tasks():
+    scheduler.add_job(main_loop, 'interval', minutes=5)
+    scheduler.start()
 
 async def main():
     await dp.start_polling(bot, skip_updates=True)
 
 if __name__ == "__main__":
+    schedule_tasks()
     asyncio.run(main())
