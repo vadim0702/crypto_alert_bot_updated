@@ -72,9 +72,21 @@ async def main_loop():
             # Получаем данные с Binance
             binance_data = await get_binance_futures()
             if not binance_data:
-                logger.warning("Не удалось получить данные с Binance")
-                await asyncio.sleep(300)
-                continue
+                logger.warning("Не удалось получить данные с Binance, попробуем Bybit...")
+                # Пробуем получить данные с Bybit как запасной вариант
+                bybit_data = await get_bybit_futures()
+                if not bybit_data:
+                    logger.warning("Не удалось получить данные с Bybit, пропускаем итерацию")
+                    await asyncio.sleep(300)
+                    continue
+                # Если данные с Bybit получены, используем их
+                data_source = "Bybit"
+                futures_data = bybit_data
+            else:
+                data_source = "Binance"
+                futures_data = binance_data
+
+            logger.info(f"Получены данные с {data_source}: {len(futures_data)} записей")
 
             # Обрабатываем каждого пользователя
             conn = sqlite3.connect('settings.db')
@@ -88,16 +100,22 @@ async def main_loop():
                 volume_threshold = settings.get("volume_threshold", 50)
                 oi_threshold = settings.get("oi_threshold", 5)
 
-                for item in binance_data:
+                for item in futures_data:
                     symbol = item.get("symbol", "")
                     if not symbol.endswith("USDT"):
                         continue
 
-                    volume_change = float(item.get("volume", 0))
-                    price = float(item.get("lastPrice", 0))
-                    oi_change = await get_binance_open_interest(symbol)
+                    # Для Bybit структура данных отличается, адаптируем
+                    if data_source == "Bybit":
+                        volume_change = float(item.get("volume_24h", 0))
+                        price = float(item.get("last_price", 0))
+                    else:
+                        volume_change = float(item.get("volume", 0))
+                        price = float(item.get("lastPrice", 0))
 
-                    if volume_change >= volume_threshold and oi_change >= oi_threshold:
+                    oi_change = await get_binance_open_interest(symbol) if data_source == "Binance" else 0
+
+                    if volume_change >= volume_threshold and (oi_change >= oi_threshold or data_source == "Bybit"):
                         await send_crypto_alert(chat_id, symbol, price, volume_change, oi_change)
 
             await asyncio.sleep(300)  # Пауза 5 минут
