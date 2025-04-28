@@ -1,1 +1,3 @@
-TELEGRAM_TOKEN = "7521190683:AAEs9cuHt9vqa12lj3gF2Od81ug50TA6cTY"
+from decouple import config
+
+TELEGRAM_TOKEN = config('TELEGRAM_TOKEN')
