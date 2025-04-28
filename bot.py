@@ -4,12 +4,17 @@ import logging
 from aiogram import Bot, Dispatcher, types, DefaultBotProperties
 from aiogram.filters import Command
 from config import TELEGRAM_TOKEN
-from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
-from database import init_db, save_settings, get_settings
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+try:
+    from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
+    from database import init_db, save_settings, get_settings
+except ImportError as e:
+    logger.error(f"Ошибка при импорте модулей: {e}")
+    raise
 
 # Инициализация бота с использованием DefaultBotProperties
 bot = Bot(token=TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
@@ -107,6 +112,11 @@ async def main():
         await dp.start_polling(bot)
     except Exception as e:
         logger.error(f"Ошибка в главном цикле бота: {e}")
+        raise
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        logger.error(f"Ошибка при запуске бота: {e}")
+        raise
