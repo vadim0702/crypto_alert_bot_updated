@@ -10,9 +10,9 @@ logging.basicConfig(level=logging.INFO)
 
 logging.info("Bot started")
 
-# Исправлено: types.Default -> types.Defaults
-bot = Bot(token=TELEGRAM_TOKEN, defaults=types.Defaults(parse_mode="HTML"))
-dp = Dispatcher(bot)  # Correctly initialized Dispatcher
+# Удалено использование types.Defaults
+bot = Bot(token=TELEGRAM_TOKEN)
+dp = Dispatcher(bot, parse_mode="HTML")  # parse_mode передан в Dispatcher
 
 @dp.message_handler(commands=["start"])  # Fixed decorator syntax
 async def cmd_start(message: types.Message):
