@@ -107,9 +107,15 @@ async def main_loop():
 
 async def main():
     try:
+        # Удаляем существующий вебхук перед началом polling
+        logger.info("Удаление существующего вебхука...")
+        await bot.delete_webhook(drop_pending_updates=True)
+        logger.info("Вебхук успешно удален")
+
         # Запускаем main_loop в фоновом режиме
         asyncio.create_task(main_loop())
         # Запускаем polling
+        logger.info("Запуск polling...")
         await dp.start_polling(bot)
     except Exception as e:
         logger.error(f"Ошибка в главном цикле бота: {e}")
