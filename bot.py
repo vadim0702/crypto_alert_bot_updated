@@ -3,6 +3,7 @@ import sqlite3
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
+from aiogram.types import DefaultBotProperties
 from config import TELEGRAM_TOKEN
 from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
 from database import init_db, save_settings, get_settings
@@ -11,7 +12,8 @@ from database import init_db, save_settings, get_settings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
+# Инициализация бота с использованием DefaultBotProperties
+bot = Bot(token=TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher()
 
 # Обработчик команды /start
