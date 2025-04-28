@@ -10,7 +10,8 @@ logging.basicConfig(level=logging.INFO)
 
 logging.info("Bot started")
 
-bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
+# Передача parse_mode через defaults
+bot = Bot(token=TELEGRAM_TOKEN, defaults=types.Defaults(parse_mode="HTML"))
 dp = Dispatcher(bot)  # Correctly initialized Dispatcher
 
 @dp.message_handler(commands=["start"])  # Fixed decorator syntax
