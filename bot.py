@@ -1,7 +1,8 @@
 import asyncio
 import sqlite3
 import logging
-from aiogram import Bot, Dispatcher, types, DefaultBotProperties
+from aiogram import Bot, Dispatcher, types
+from aiogram.client.default import DefaultBotProperties
 from aiogram.filters import Command
 from config import TELEGRAM_TOKEN
 
