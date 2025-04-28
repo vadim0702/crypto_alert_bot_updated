@@ -1,4 +1,5 @@
-from decouple import config
+import os
 
-# Load the token from the environment variables
-TELEGRAM_TOKEN = config("TELEGRAM_TOKEN")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_TOKEN не указан в переменных окружения")
