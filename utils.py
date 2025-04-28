@@ -1,4 +1,9 @@
 import aiohttp
+import logging
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 async def get_binance_futures():
     url = 'https://fapi.binance.com/fapi/v1/ticker/24hr'
@@ -8,7 +13,7 @@ async def get_binance_futures():
                 resp.raise_for_status()
                 return await resp.json()
     except aiohttp.ClientError as e:
-        print(f"Ошибка при запросе к Binance: {e}")
+        logger.error(f"Ошибка при запросе к Binance: {e}")
         return []
 
 async def get_bybit_futures():
@@ -20,7 +25,7 @@ async def get_bybit_futures():
                 data = await resp.json()
                 return data.get('result', [])
     except aiohttp.ClientError as e:
-        print(f"Ошибка при запросе к Bybit: {e}")
+        logger.error(f"Ошибка при запросе к Bybit: {e}")
         return []
 
 async def get_binance_open_interest(symbol):
@@ -36,7 +41,7 @@ async def get_binance_open_interest(symbol):
                     return round(((oi_new - oi_old) / oi_old) * 100, 2) if oi_old != 0 else 0
                 return 0
     except aiohttp.ClientError as e:
-        print(f"Ошибка при запросе OI для {symbol}: {e}")
+        logger.error(f"Ошибка при запросе OI для {symbol}: {e}")
         return 0
 
 def generate_tradingview_link(symbol):
