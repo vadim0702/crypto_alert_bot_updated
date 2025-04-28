@@ -10,6 +10,9 @@ async def get_binance_futures():
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
+                if resp.status == 451:
+                    logger.error("Доступ к Binance заблокирован (ошибка 451). Возможно, региональные ограничения.")
+                    return []
                 resp.raise_for_status()
                 return await resp.json()
     except aiohttp.ClientError as e:
@@ -33,6 +36,9 @@ async def get_binance_open_interest(symbol):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
+                if resp.status == 451:
+                    logger.error(f"Доступ к Binance для OI ({symbol}) заблокирован (ошибка 451).")
+                    return 0
                 resp.raise_for_status()
                 data = await resp.json()
                 if isinstance(data, list) and len(data) >= 2:
