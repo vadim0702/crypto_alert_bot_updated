@@ -3,7 +3,14 @@ from aiogram import Bot, Dispatcher, types
 from config import TELEGRAM_TOKEN
 from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
 from database import init_db, save_settings, get_settings
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+scheduler = AsyncIOScheduler()
+
+def schedule_tasks():
+    scheduler.add_job(main_loop, 'interval', minutes=5)
+    scheduler.start()
+    
 bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
 dp = Dispatcher()
 
