@@ -1,9 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from config import TELEGRAM_TOKEN
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from utils import get_binance_futures, generate_tradingview_link, generate_coinglass_link
 from database import init_db
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
