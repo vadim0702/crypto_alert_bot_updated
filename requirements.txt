@@ -1,4 +1,4 @@
 aiogram
 apscheduler
 python-decouple
-<replace_with_actual_dependencies_if_any>
+
