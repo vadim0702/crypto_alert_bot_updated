@@ -1,18 +1,19 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from config import TELEGRAM_TOKEN
-from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
-from database import init_db, save_settings, get_settings
+from utils import get_binance_futures, generate_tradingview_link, generate_coinglass_link
+from database import init_db
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
 logging.info("Bot started")
-    
-bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
-dp = Dispatcher()
 
-@dp.message(commands=["start"])
+bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
+dp = Dispatcher(bot)  # Correctly initialized Dispatcher
+
+@dp.message_handler(commands=["start"])  # Fixed decorator syntax
 async def cmd_start(message: types.Message):
     await message.answer("Привет! 👋\nЯ помогу тебе следить за крипторынком!")
 
@@ -42,19 +43,19 @@ async def main_loop():
     init_db()
     while True:
         binance_data = await get_binance_futures()
-        # Тут пример обработки монет и вызова send_crypto_alert
+        # Example processing of coins and calling send_crypto_alert
         # await send_crypto_alert(chat_id, symbol, price, volume_change, oi_change)
-      from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        await asyncio.sleep(300)  # Sleep for 5 minutes between checks
 
 scheduler = AsyncIOScheduler()
 
 def schedule_tasks():
-    scheduler.add_job(main_loop, 'interval', minutes=5)
+    scheduler.add_job(main_loop, 'interval', minutes=5)  # Scheduling the main_loop
     scheduler.start()
 
 async def main():
+    schedule_tasks()
     await dp.start_polling(bot, skip_updates=True)
 
 if __name__ == "__main__":
-    schedule_tasks()
     asyncio.run(main())
