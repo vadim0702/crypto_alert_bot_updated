@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 logging.info("Bot started")
 
-# Передача parse_mode через defaults
+# Исправлено: types.Default -> types.Defaults
 bot = Bot(token=TELEGRAM_TOKEN, defaults=types.Defaults(parse_mode="HTML"))
 dp = Dispatcher(bot)  # Correctly initialized Dispatcher
 
