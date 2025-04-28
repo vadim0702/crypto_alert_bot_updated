@@ -1,5 +1,7 @@
 import asyncio
+import sqlite3
 from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
 from config import TELEGRAM_TOKEN
 from utils import get_binance_futures, get_bybit_futures, get_binance_open_interest, generate_tradingview_link, generate_coinglass_link
 from database import init_db, save_settings, get_settings
@@ -7,11 +9,13 @@ from database import init_db, save_settings, get_settings
 bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
 dp = Dispatcher()
 
-@dp.message(commands=["start"])
+# Обработчик команды /start
+@dp.message(Command(commands=["start"]))
 async def cmd_start(message: types.Message):
     await message.answer("Привет! 👋\nЯ помогу тебе следить за крипторынком!\nИспользуй /settings для настройки уведомлений.")
 
-@dp.message(commands=["settings"])
+# Обработчик команды /settings
+@dp.message(Command(commands=["settings"]))
 async def cmd_settings(message: types.Message):
     args = message.text.split()
     if len(args) != 3:
@@ -91,7 +95,10 @@ async def main_loop():
 
 async def main():
     try:
-        await dp.start_polling(bot, skip_updates=True)
+        # Запускаем main_loop в фоновом режиме
+        asyncio.create_task(main_loop())
+        # Запускаем polling
+        await dp.start_polling(bot)
     except Exception as e:
         print(f"Ошибка в главном цикле бота: {e}")
 
